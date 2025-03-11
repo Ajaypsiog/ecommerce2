@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel - ShopTrendy</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+    <!-- Add Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>ShopTrendy Admin</h1>
+        <nav>
+            <a onclick="logout()" class="nav-link logout">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Admin Panel (default section) -->
+        <div id="adminPanel" class="section active">
+            <h2>Admin Dashboard</h2>
+            <button onclick="showSection('addProductSection')">Add New Product</button>
+            <button onclick="showSection('readProductsSection'); loadProducts();">View Products</button>
+            <button onclick="showSection('salesGraphSection'); loadSalesGraph();">View Sales Graph</button>
+            <button onclick="logout()">Logout</button>
+            <div id="productMessage" class="message"></div>
+        </div>
+
+        <!-- Add Product Section -->
+        <div id="addProductSection" class="section">
+            <h2>Add New Product</h2>
+            <form id="addProductForm">
+                <input type="text" id="productName" placeholder="Product Name" required>
+                <input type="number" id="productPrice" placeholder="Product Price" required>
+                <input type="number" id="productCredit" placeholder="Product Credit" required>
+                <input type="number" id="productQuantity" placeholder="Product Quantity" required>
+                <select id="productCategory" required>
+                    <option value="" disabled selected>Select Category</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Clothing">Clothing-Male</option>
+                    <option value="Clothing">Clothing-Female</option>
+                    <option value="Books">Books</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Footwears-Male">Footwears-Male</option>
+                    <option value="Footwears-Female">Footwears-Female</option>
+                    <option value="Books">Books</option>
+                    <option value="Groceries">Groceries</option>
+                    <option value="Furnitures">Furnitures</option>
+                    <option value="Home Appliances">Home Appliances</option>
+                </select>
+                <input type="text" id="productImageName" placeholder="Image File Name (e.g., product1.jpg)" required>
+                <button type="submit">Add Product</button>
+            </form>
+            <button onclick="showSection('adminPanel')">Back to Dashboard</button>
+        </div>
+
+        <!-- Read Products Section -->
+        <div id="readProductsSection" class="section">
+            <h2>View Products</h2>
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <input type="text" id="searchInput" placeholder="Search products...">
+                    <select id="categoryFilter">
+                        <option value="All">All Categories</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Clothing">Clothing-Male</option>
+                    <option value="Clothing">Clothing-Female</option>
+                    <option value="Books">Books</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Footwears-Male">Footwears-Male</option>
+                    <option value="Footwears-Female">Footwears-Female</option>
+                    <option value="Books">Books</option>
+                    <option value="Groceries">Groceries</option>
+                    <option value="Furnitures">Furnitures</option>
+                    <option value="Home Appliances">Home Appliances</option>
+                    </select>
+                    <button id="searchButton" onclick="searchProducts()">Search</button>
+                </div>
+            </div>
+            <div id="productsList" class="products-grid"></div>
+            <button onclick="showSection('adminPanel')">Back to Dashboard</button>
+        </div>
+
+        <!-- Sales Graph Section -->
+               <!-- Sales Graph Section -->
+               <div id="salesGraphSection" class="section">
+                <h2>Sales Graph</h2>
+                <select id="timeFilter" onchange="loadSalesGraph()">
+                    <option value="all">All Time</option>
+                    <option value="7days">Last 7 Days</option>
+                    <option value="30days">Last 30 Days</option>
+                </select>
+                <select id="chartType" onchange="loadSalesGraph()">
+                    <option value="bar">Bar</option>
+                    <option value="line">Line</option>
+                    <option value="pie">Pie</option>
+                </select>
+                
+            <button onclick="showSection('adminPanel')">Back to Dashboard</button>
+       
+                <canvas id="salesChart" style="max-height: 400px;"></canvas>
+                <!-- The download button will be dynamically added here -->
+            </div>
+
+        <!-- Update Product Section -->
+        <div id="updateProductSection" class="section">
+            <h2>Update Product</h2>
+            <form id="updateProductForm">
+                <input type="text" id="updateProductName" placeholder="Product Name" required>
+                <input type="number" id="updateProductPrice" placeholder="Product Price" required>
+                <input type="number" id="updateProductCredit" placeholder="Product Credit" required>
+                <input type="number" id="updateProductQuantity" placeholder="Product Quantity" required>
+                <select id="updateProductCategory" required>
+                    <option value="" disabled>Select Category</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Clothing">Clothing-Male</option>
+                    <option value="Clothing">Clothing-Female</option>
+                    <option value="Books">Books</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Footwears-Male">Footwears-Male</option>
+                    <option value="Footwears-Female">Footwears-Female</option>
+                    <option value="Books">Books</option>
+                    <option value="Groceries">Groceries</option>
+                    <option value="Furnitures">Furnitures</option>
+                    <option value="Home Appliances">Home Appliances</option>
+                </select>
+                <input type="text" id="updateProductImageName" placeholder="Image File Name" required>
+                <button type="submit">Update Product</button>
+            </form>
+            <button onclick="showSection('readProductsSection'); loadProducts();">Back to Products</button>
+        </div>
+
+        <!-- Delete Product Section -->
+        <div id="deleteProductSection" class="section">
+            <h2>Delete Product</h2>
+            <p>Are you sure you want to delete this product?</p>
+            <div id="deleteProductDetails"></div>
+            <button id="confirmDeleteBtn">Delete</button>
+            <button onclick="showSection('readProductsSection'); loadProducts();">Cancel</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 ShopTrendy. All rights reserved.</p>
+    </footer>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
